@@ -1,0 +1,252 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>今天吃什么</title>
+
+        <script src="https://libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+
+        <style>
+            body {
+                /* background-color:aliceblue; */
+                background-image: url(https://i.loli.net/2020/09/24/wSBsn7je2zuD9hg.png);
+            }
+
+            h1 {
+                font-size: 250%;
+                font-family: 'Century Gothic', Futura, Verdana;
+                text-align: center;
+                color: #ffd800;
+                text-shadow: 1px 1px #f28d00, 2px 2px #f28d00, 3px 3px #f28d00, 4px 4px #f28d00,
+                    5px 5px #f28d00, 6px 6px #f28d00;
+                margin-top: 0px;
+                margin-bottom: 10px;
+            }
+
+            .box {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .row {
+                flex-basis: 100%;
+                display: flex;
+
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .leftBox {
+                clear: both;
+            }
+
+            #span {
+                float: right;
+                top: 30px;
+                right: 185px;
+            }
+
+            #btn {
+                /* float:left; */
+                width: 100px;
+                height: 30px;
+                /* margin-left:10px; */
+                /* margin-top:200px; */
+                color: white;
+                border: 1px solid #fb8f3d;
+                background: -webkit-linear-gradient(top, #fda251, #fb8f3d);
+                background: -moz-linear-gradient(top, #fda251, #fb8f3d);
+                background: -ms-linear-gradient(top, #fda251, #fb8f3d);
+            }
+
+            .nameBox {
+                padding: 25px;
+                width: 150px;
+                height: 150px;
+                float: left;
+                background-color: moccasin;
+                margin-left: 10px;
+                margin-top: 10px;
+                font-size: 36px;
+                line-height: 130px;
+                color: #fb8f3d;
+                font-weight: bold;
+                font-family: 'Century Gothic', Futura, Verdana;
+                text-align: center;
+            }
+
+            .selectedName {
+                width: 50%;
+                /* background:#666; */
+                background: #ffffff;
+                overflow: hidden;
+            }
+
+            h1 {
+                text-align: center;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="box">
+            <div class="row">
+                <h1>今天吃什么</h1>
+            </div>
+            <div class="row">
+                <input type="button" id="btn" value="开始走起" />
+            </div>
+
+            <span id="span"> </span>
+
+            <div class="row">
+                <div id="leftBox" class="leftBox"></div>
+            </div>
+        </div>
+
+        <script>
+            // 模拟后台数据
+            var arr = [
+                '冒菜',
+                '海南鸡饭',
+                '蒸香鹅',
+                '桂林米粉',
+                '金百味',
+                '重庆小面',
+                '饺子',
+                '裕祥源',
+            ];
+
+            var q = [];
+
+            var orgArrCount = arr.length;
+            var currentSelectNum = 0;
+            var people = 0;
+
+            initForm();
+
+            // 初始化表单
+            function initForm() {
+                // 动态创建图层
+                dynamicCreateBox();
+            }
+
+            // 动态创建层
+            function dynamicCreateBox() {
+                for (var i = 0; i < arr.length; i++) {
+                    var div = document.createElement('div');
+                    div.innerText = arr[i];
+                    div.className = 'nameBox';
+                    div.id = i;
+                    $('#leftBox').append(div);
+                }
+            }
+
+            // 清空小方格颜色
+            function clearBoxColor() {
+                $('#leftBox')
+                    .children('div')
+                    .each(function () {
+                        $(this).css('background-color', '');
+
+                        for (var i = 0; i < q.length; i++) {
+                            if ($(this).attr('id') == q[i]) {
+                                $(this).css('background-color', '');
+                            }
+                        }
+                    });
+            }
+
+            // 设置选中小方格颜色
+            function setBoxColor() {
+                $('#leftBox')
+                    .children('div')
+                    .each(function () {
+                        var thisId = $(this).attr('id');
+                        if (thisId == currentSelectNum) {
+                            $(this).css('background-color', 'LightBlue');
+                        }
+                    });
+            }
+
+            function quit() {
+                $('#leftBox')
+                    .children('div')
+                    .each(function () {
+                        var thisId = $(this).attr('id');
+                        if (thisId == currentSelectNum) {
+                            $(this).css('display', 'none');
+                        }
+                    });
+            }
+
+            $('#btn').click(function () {
+                if (q.length == orgArrCount) {
+                    // 清空所有层的颜色
+                    clearBoxColor();
+                    return;
+                }
+                // 监视按钮的状态
+                if (this.value === '开始走起') {
+                    // 定时针
+                    timeId = setInterval(function () {
+                        // 清空所有层的颜色
+                        clearBoxColor();
+
+                        //随机生成一个数
+                        flag = true;
+
+                        while (flag) {
+                            var num = Math.floor(Math.random() * orgArrCount);
+                            var count = 0;
+                            for (var i = 0; i < q.length; i++) {
+                                if (num == people || num == q[i]) {
+                                    count++;
+                                }
+                            }
+                            if (count == 0) {
+                                flag = false;
+                            }
+                        }
+                        currentSelectNum = num;
+
+                        // 设置选中小方格颜色
+                        setBoxColor();
+                    }, 50);
+                    this.value = '停止';
+                } else {
+                    // 清除计时器
+                    clearInterval(timeId);
+
+                    // 移除
+                    q.push(currentSelectNum);
+                    people = q.length;
+                    this.value = '开始走起';
+                }
+            });
+
+            // 获取时间的函数
+            getTime();
+            setInterval(getTime, 50);
+
+            function getTime() {
+                var day = new Date();
+                var year = day.getFullYear(); //年
+                var month = day.getMonth() + 1; //月
+                var dat = day.getDate(); //日
+                var hour = day.getHours(); //小时
+                var minitue = day.getMinutes(); //分钟
+                var second = day.getSeconds(); //秒
+                month = month < 10 ? '0' + month : month;
+                dat = dat < 10 ? '0' + dat : dat;
+                hour = hour < 10 ? '0' + hour : hour;
+                minitue = minitue < 10 ? '0' + minitue : minitue;
+                second = second < 10 ? '0' + second : second;
+                $('#span').innerText =
+                    year + '-' + month + '-' + dat + ' ' + hour + ':' + minitue + ':' + second;
+            }
+        </script>
+    </body>
+</html>
